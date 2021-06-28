@@ -1,0 +1,204 @@
+---
+# defaults file for kafka_cruise_control
+#cruise control download url
+cruise_download_base_url: http://github.com/linkedin/cruise-control/archive
+#cruise ui download url
+cruise_ui_download_base_url: http://github.com/linkedin/cruise-control-ui/releases/tag
+# The cruise control and cruise_ui version to be downloaded and installed
+cruise_version: 2.5.55
+cruise_ui_version: 0.3.4
+#cruise user and cruise group to be created
+cruise_create_user_group: true
+cruise_user: cruise-control
+cruise_group: cruise-control
+
+cruise_root_dir: /opt
+cruise_dir: "{{ cruise_root_dir }}/cruise-control"
+# The application log folder (e.g: server.log)
+cruise_log_dir: /var/log/cruise-control
+# A comma separated list of directories under which to store data log files
+cruise_data_log_dirs: /var/lib/cruise-control/logs
+####################cruisecontrol.properties#####################
+# The Kafka cluster to control
+cruise_bootstrap_connect: "0.0.0.0:9092"
+# The number of metric fetcher thread to fetch metrics for the Kafka cluster
+metrics_fetchers_num: 1
+# True if the sampling process allows CPU capacity estimation of brokers used for CPU utilization estimation
+cpu_capacity_estimation: true
+# The replication factor of Kafka metric sample store topic
+topic_replication_factor: 2
+# The config for the number of Kafka sample store consumer threads
+threads_loading_num: 8
+# The metric sampling interval in milliseconds
+metrics_interval_ms: 120000
+# The number of partition metric windows to keep in memory. Partition-load-history = num.partition.metrics.windows * partition.metrics.window.ms
+metrics_partitions_windows: 5
+# The minimum partition metric samples required for a partition in each window
+min_samples_per_partition: 1
+# The partition metrics window size in milliseconds
+partition_metrics: 300000
+# The broker metrics window size in milliseconds
+broker_metrics_ms: 300000
+# The number of broker metric windows to keep in memory. Broker-load-history = num.broker.metrics.windows * broker.metrics.window.ms
+num_broker_metrics: 20
+# The minimum broker metric samples required for a partition in each window
+min_samples_per_broker: 1
+# The configuration for the BrokerCapacityConfigFileResolver (supports JBOD, non-JBOD, and heterogeneous CPU core capacities)
+capacity_config_file: config/capacity.json
+# The minimum percentage of well monitored partitions out of all the partitions
+min_valid_partition: 0.95
+# The balance threshold for CPU
+cpu_balance: 1.1
+# The balance threshold for disk
+disk_balance: 1.1
+# The balance threshold for network inbound utilization
+network_inbound_balance: 1.1
+# The balance threshold for network outbound utilization
+network_outbound_balance: 1.1
+# The balance threshold for the replica count
+replica_count_balance: 1.1
+# The capacity threshold for CPU in percentage
+cpu_capacity_percent: 0.7
+# The capacity threshold for disk in percentage
+disk_capacity_percent: 0.8
+# The capacity threshold for network inbound utilization in percentage
+network_inbound_capacity_percent: 0.8
+# The capacity threshold for network outbound utilization in percentage
+network_outbound_capacity_percent: 0.8
+# The threshold to define the cluster to be in a low CPU utilization state
+cpu_low_utulization: 0.0
+# The threshold to define the cluster to be in a low disk utilization state
+disk_low_utulization: 0.0 
+# The threshold to define the cluster to be in a low network inbound utilization state
+network_inbound_low_utulization: 0.0
+# The threshold to define the cluster to be in a low network outbound utilization state
+network_outbound_low_utulization: 0.0
+# The metric anomaly percentile upper threshold
+metric_anomaly_upper: 90.0
+# The metric anomaly percentile lower threshold
+metric_anomaly_lower: 10.0
+# How often should the cached proposal be expired and recalculated if necessary
+proposal_expiration_ms: 60000
+# The maximum number of replicas that can reside on a broker at any given time
+max_replicas_per_broker: 10000
+# The number of threads to use for proposal candidate precomputing
+num_proposal_precompute_threads: 1
+# The zookeeper connect of the Kafka cluster
+zookeeper_connect: "localhost:2181"
+# If true, appropriate zookeeper Client { .. } entry required in jaas file located at $base_dir/config/cruise_control_jaas.conf
+zookeeper_security: false
+# The max number of partitions to move in/out on a given broker at a given time
+partition_movements_per_broker: 10
+# The max number of partitions to move between disks within a given broker at a given time
+intra_broker_partition_movements: 2
+# The max number of leadership movement within the whole cluster at a given time
+num_leader_movements: 1000
+# The interval between two execution progress checks
+progress_check_interval_ms: 10000
+# True if recently removed brokers are excluded from optimizations during self healing, false otherwise
+self_healing_removed_brokers: true
+# True if recently demoted brokers are excluded from optimizations during self healing, false otherwise
+self_healing_demoted_brokers: true
+# The zk path to store failed broker information
+failed_brokers_path: /CruiseControlBrokerList
+# The cluster configurations for the KafkaTopicConfigProvider
+cluster_configs_file: config/clusterConfigs.json
+# The maximum time in milliseconds to store the response and access details of a completed kafka monitoring user task
+kafka_monitor_usertask_done_ms: 86400000
+# The maximum time in milliseconds to store the response and access details of a completed cruise control monitoring user task
+cruise_monitor_usertask_done_ms: 86400000
+# The maximum time in milliseconds to store the response and access details of a completed kafka admin user task
+kafka_monitor_admintask_done_ms: 604800000
+# The maximum time in milliseconds to store the response and access details of a completed cruise control admin user task
+cruise_monitor_admintask_done_ms: 604800000
+# The fallback maximum time in milliseconds to store the response and access details of a completed user task
+usertask_done_ms: 86400000
+# The maximum time in milliseconds to retain the demotion history of brokers
+demotion_history_ms: 1209600000
+# The maximum time in milliseconds to retain the removal history of brokers
+removal_history_ms: 1209600000
+# The maximum number of completed kafka monitoring user tasks for which the response and access details will be cached
+max_cached_kafkamonitor_usertasks_done: 20
+# The maximum number of completed kafka admin user tasks for which the response and access details will be cached
+max_cached_kafka_adminuser_tasks_done: 30
+# The maximum number of completed cruise control admin user tasks for which the response and access details will be cached
+max_cached_cruise_admintasks_done: 30
+# The maximum number of completed cruise control monitoring user tasks for which the response and access details will be cached
+max_cached_cruise_usertasks_done: 20
+# The fallback maximum number of completed user tasks of certain type for which the response and access details will be cached
+max_cached_usertasks_done: 25
+# The maximum number of user tasks for concurrently running in async endpoints across all users
+max_active_user_tasks: 5
+# Enable self healing for all anomaly detectors, unless the particular anomaly detector is explicitly disabled
+self_healing: true
+# HTTP listen port
+cruise_listen_port: 9090
+# HTTP listen address
+linsten_address: 0.0.0.0
+# Whether CORS support is enabled for API or not
+http_cors: true
+# Value for Access-Control-Allow-Origin
+http_cors_allow_access: *
+# Value for Access-Control-Request-Method
+cors_allow_methods: POST,GET,OPTIONS
+# Headers that should be exposed to the Browser (Webapp)
+# This is a special header that is used by the
+# User Tasks subsystem and should be explicitly
+# Enabled when CORS mode is used as part of the
+# Admin Interface
+cors_expose_headers: User-Task-ID,Content-Type
+# REST API default prefix (dont forget the ending /*)
+api_urlprefix: /kafkacruisecontrol/*
+# Location where the Cruise Control frontend is deployed
+ui_diskpath: ./cruise-control-ui/dist/
+# URL path prefix for UI (dont forget the ending /*)
+ui_urlprefix: /*
+# Time After which request is converted to Async
+request_maxblock: 1000
+# Default Session Expiry Period
+session_maxexpire: 6000
+# Session cookie path
+session_path: /
+# Server Access Logs
+accesslog: true
+# Location of HTTP Request Logs
+accesslog_path: access.log
+# HTTP Request Log retention days
+accesslog_days: 14
+# Enable two-step verification for processing POST requests
+two_step_verification: true
+# The maximum time in milliseconds to retain the requests in two-step (verification) purgatory
+two_step_purgatory_retention: 1209600000
+# The maximum number of requests in two-step (verification) purgatory
+two_step_purgatory_maxrequests: 25
+# The partition assignor class for the metric samplers
+metric_class: com.linkedin.kafka.cruisecontrol.monitor.sampling.CruiseControlMetricsReporterSampler
+# Configurations for CruiseControlMetricsReporterSampler
+metric_reporter_topic: __CruiseControlMetrics
+# The sample store class name
+store_class: com.linkedin.kafka.cruisecontrol.monitor.sampling.KafkaSampleStore
+# The config for the Kafka sample store to save the partition metric samples
+partition_store_topic: __KafkaCruiseControlPartitionMetricSamples
+# The config for the Kafka sample store to save the model training samples
+broker_store_topic: __KafkaCruiseControlModelTrainingSamples
+# The partition assignor class for the metric samplers
+metric_partition_assignor_class: com.linkedin.kafka.cruisecontrol.monitor.sampling.DefaultMetricSamplerPartitionAssignor
+# The list of goals to optimize the Kafka cluster for with pre-computed proposals -- consider using RackAwareDistributionGoal instead of RackAwareGoal in clusters with partitions whose replication factor > number of racks 
+default_goals: com.linkedin.kafka.cruisecontrol.analyzer.goals.RackAwareGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.ReplicaCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.DiskCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.NetworkInboundCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.NetworkOutboundCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.CpuCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.ReplicaDistributionGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.PotentialNwOutGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.DiskUsageDistributionGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.NetworkInboundUsageDistributionGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.NetworkOutboundUsageDistributionGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.CpuUsageDistributionGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.TopicReplicaDistributionGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.LeaderReplicaDistributionGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.LeaderBytesInDistributionGoal
+# The list of supported goals
+supported_goals: com.linkedin.kafka.cruisecontrol.analyzer.goals.RackAwareGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.RackAwareDistributionGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.ReplicaCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.DiskCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.NetworkInboundCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.NetworkOutboundCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.CpuCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.ReplicaDistributionGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.PotentialNwOutGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.DiskUsageDistributionGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.NetworkInboundUsageDistributionGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.NetworkOutboundUsageDistributionGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.CpuUsageDistributionGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.TopicReplicaDistributionGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.LeaderReplicaDistributionGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.LeaderBytesInDistributionGoal,com.linkedin.kafka.cruisecontrol.analyzer.kafkaassigner.KafkaAssignerDiskUsageDistributionGoal,com.linkedin.kafka.cruisecontrol.analyzer.kafkaassigner.KafkaAssignerEvenRackAwareGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.PreferredLeaderElectionGoal
+# The list of supported intra-broker goals
+intra_broker_goals: com.linkedin.kafka.cruisecontrol.analyzer.goals.IntraBrokerDiskCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.IntraBrokerDiskUsageDistributionGoal
+# The list of supported hard goals -- consider using RackAwareDistributionGoal instead of RackAwareGoal in clusters with partitions whose replication factor > number of racks
+hard_goals: com.linkedin.kafka.cruisecontrol.analyzer.goals.RackAwareGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.ReplicaCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.DiskCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.NetworkInboundCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.NetworkOutboundCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.CpuCapacityGoal
+# The goal violation notifier class
+anomaly_notifier_class: com.linkedin.kafka.cruisecontrol.detector.notifier.SelfHealingNotifier
+# The metric anomaly finder class
+metric_anomaly_finderclass: com.linkedin.kafka.cruisecontrol.detector.KafkaMetricAnomalyFinder
+# The goal violation to detect -- consider using RackAwareDistributionGoal instead of RackAwareGoal in clusters with partitions whose replication factor > number of racks
+anomaly_detection_goals: com.linkedin.kafka.cruisecontrol.analyzer.goals.RackAwareGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.ReplicaCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.DiskCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.NetworkInboundCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.NetworkOutboundCapacityGoal,com.linkedin.kafka.cruisecontrol.analyzer.goals.CpuCapacityGoal
+# The interested metrics for metric anomaly analyzer
+metric_anomaly_analyzer: BROKER_PRODUCE_LOCAL_TIME_MS_50TH,BROKER_PRODUCE_LOCAL_TIME_MS_999TH,BROKER_CONSUMER_FETCH_LOCAL_TIME_MS_50TH,BROKER_CONSUMER_FETCH_LOCAL_TIME_MS_999TH,BROKER_FOLLOWER_FETCH_LOCAL_TIME_MS_50TH,BROKER_FOLLOWER_FETCH_LOCAL_TIME_MS_999TH,BROKER_LOG_FLUSH_TIME_MS_50TH,BROKER_LOG_FLUSH_TIME_MS_999TH
+# Topic config provider class
+topic_config_providerclass: com.linkedin.kafka.cruisecontrol.config.KafkaTopicConfigProvider
+

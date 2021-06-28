@@ -1,0 +1,432 @@
+---
+# tasks file for kafka_cruise_control
+- name: Install git
+  apt:
+    name: git
+    state: present
+    update_cache: yes
+
+- name: Create cruise group
+  group:
+    name: '{{ cruise_group }}'
+    state: present
+  when: cruise_create_user_group | bool
+  tags:
+    - cruise_group
+
+- name: Create cruise user
+  user:
+    name: '{{ cruise_user }}'
+    group: '{{ cruise_group }}'
+    state: present
+    createhome: no
+  when: cruise_create_user_group | bool
+  tags:
+    - cruise_user
+
+- name: Download cruise control
+  get_url:
+    url: "{{ cruise_download_base_url }}/{{ cruise_version }}.tar.gz"
+    dest: /tmp
+  when: not dir.stat.exists
+  tags:
+    - cruise_download
+
+- name: Unpack cruise control
+  unarchive:
+    src: /tmp/{{ cruise_version }}.tar.gz
+    dest: '{{ cruise_root_dir }}'
+    copy: no
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+  when: not dir.stat.exists
+  tags:
+    - cruise_unpack
+
+- name: Create directory for cruise control
+  file:
+    path: '{{ cruise_dir }}'
+    state: directory
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0755
+  tags:
+    - cruise_dirs
+
+- name: Create directory for cruise data log files
+  file:
+    path: '{{ cruise_data_log_dirs }}'
+    state: directory
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0755
+  tags:
+    - cruise_dirs
+
+- name: Register '{{ cruise_dir }}/logs' directory status
+  stat:
+    path: '{{ cruise_dir }}/logs'
+  register: application_logs_dir
+  tags:
+    - cruise_dirs
+
+- name: Create directory for cruise application logs
+  file:
+    path: '{{ cruise_log_dir }}'
+    state: directory
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0755
+  tags:
+    - cruise_dirs
+
+- name: Create directory for symlink to cruise configuration files
+  file:
+    path: /etc/cruise-control
+    state: directory
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0755
+  tags:
+    - cruise_dirs
+
+- name: Create gradle directory
+  file:
+    path: {{ cruise_dir }}/gradle
+    state: directory
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0755
+  tags:
+    - cruise_dirs
+
+- name: copy gradle directory content
+  synchronize:
+   src: /tmp/cruise-control-{{ cruise_version }}/gradle
+   dest: {{ cruise_dir }}/gradle
+
+- name: Create config directory 
+  file:
+    path: {{ cruise_dir }}/config
+    state: directory
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0755
+  tags:
+    - cruise_dirs
+
+- name: create docs directory
+  file:
+    path: {{ cruise_dir }}
+    state: directory
+    group: {{ cruise_group }}
+    owner: {{ cruise_user }}
+    mode: 0755
+  tags:
+    - cruise_dirs
+
+- name: copy docs directory content
+  synchronize:
+    src: /tmp/cruise-control-{{ cruise_version }}/docs
+    dest: {{ cruise_dir }}/docs
+
+- name: create cruise-control-client directory
+  file:
+    path: {{ cruise_dir }}/cruise-control-client
+    state: directory
+    group: {{ cruise_group }}
+    owner: {{ cruise_user }}
+    mode: 0755
+  tags:
+    - cruise_dirs
+
+- name: create chechstyle directory
+  file:
+    path: {{ cruise_dir }}/checkstyle
+    state: directory
+    group: {{ cruise_group }}
+    owner: {{ cruise_user }}
+    mode: 0755
+  tags:
+    - cruise_dirs
+
+- name: copy checkstyle content
+  synchronize:
+    src: /tmp/cruise-control-{{ cruise_version }}/checkstyle
+    dest: {{ cruise_dir }}/checkstyle
+
+- name: create buildSrc directory
+  file:
+    path: {{ cruise_dir }}/buildSrc
+    state: directory
+    group: {{ cruise_group }}
+    owner: {{ cruise_user }}
+    mode: 0755
+  tags:
+    - cruise_dirs
+
+- name: copy buildSrc content
+  synchronize:
+    src: /tmp/cruise-control-{{ cruise_version }}
+    dest: {{ cruise_dir }}/buildSrc
+
+- name: create cruise-control-core directory
+  file:
+    path: {{ cruise_dir }}^/cruise-control-core
+    state: directory
+    group: {{ cruise_group }}
+    owner: {{ cruise_user }}
+    mode: 0755
+  tags: 
+    - cruise_dirs
+
+- name: copy cruise-control-core's content
+  synchronize: 
+    src: /tmp/cruise-control-{{ cruise_version }}/cruise-control-core
+    dest: {{ cruise_dir }}/cruise-control-core
+
+- name: create cruise-control-metrics-reporter directory
+  file:
+    path: {{ cruise_dir }}/cruise-control-metrics-reporter
+    state: directory
+    group: {{ cruise_group }}
+    owner: {{ cruise_user }}
+    mode: 0755
+  tags:
+    - cruise_dirs
+
+- name: copy cruise-control-metrics-reporter's content
+  synchronize:
+    src: /tmp/cruise-control-{{ cruise_version }}/cruise-control-metrics-reporter
+    dest: {{ cruise_dir }}/cruise-control-metrics-reporter
+
+- name: copy cruise-control-client directory's content
+  synchronize:
+    src: /tmp/cruise-control-{{ cruise_version }}/cruise-control-client
+    dest: {{ cruise_dir }}/cruise-control-client
+
+- name: create cruise-control directory
+  file:
+    path: {{ cruise_dir }}/cruise-control
+    state: directory
+    group: {{ cruise_group }}
+    owner: {{ cruise_user }}
+    mode: 0755
+  tags:
+    - cruise_dirs
+
+- name: copy cruise-control content
+  synchronize:
+    src: /tmp/cruise-control-{{ cruise_version }}/cruise-control
+    dest: {{ cruise_dir }}/cruise-control
+
+- name: Template configuration file to cruisecontrol.properties
+  template:
+    src: cruisecontrol.properties.j2
+    dest: '{{ cruise_dir }}/config/cruisecontrol.properties'
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0644
+  tags:
+    - cruise_config
+
+- name: Template configuration file to capacity.json
+  template:
+    src: capacity.json.j2
+    dest: '{{ cruise_dir }}/config/capacity.json'
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0644
+  tags:
+    - cruise_config
+
+- name: Template configuration file to capacityJBOD.json
+  template:
+    src: capacityJBOD.json.j2
+    dest: '{{ cruise_dir }}/config/capacityJBOD.json'
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0644
+  tags:
+    - cruise_config
+
+- name: Template configuration file to clusterConfigs.json
+  template:
+    src: clusterConfigs.json.j2
+    dest: '{{ cruise_dir }}/config/clusterConfigs.json'
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0644
+  tags:
+    - cruise_config
+
+- name: Template configuration file to log4j.properties
+  template:
+    src: log4j.properties.j2
+    dest: '{{ cruise_dir }}/config/log4j.properties'
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0644
+  tags:
+    - cruise_config
+
+- name: Template configuration file to capacityCores.json
+  template:
+    src: capacityCores.json.j2
+    dest: '{{ cruise_dir }}/config/capacityCores.json'
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0644
+  tags:
+    - cruise_config
+
+- name: Template configuration file to cruise_controle_jaas.conf_template
+  template:
+    src: cruise_control_jaas.conf_template.j2
+    dest: '{{ cruise_dir }}/config/cruise_control_jaas.conf_template'
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0644
+  tags:
+    - cruise_config
+
+- name: Template configuration file to gradle.properties
+  template:
+    src: gradle.properties.j2
+    dest: '{{ cruise_dir }}/gradle.properties'
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0644
+  tags:
+    - cruise_config
+
+- name: Template configuration file to kafka-cruise-control-start.sh
+  template:
+    src: kafka-cruise-control-start.sh.j2
+    dest: '{{ cruise_dir }}/kafka-cruise-control-start.sh'
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0644
+  tags:
+    - cruise_config
+
+- name: Template configuration file to kafka-cruise-control-stop.sh
+  template:
+    src: kafka-cruise-control-stop.sh.j2
+    dest: '{{ cruise_dir }}/kafka-cruise-control-stop.sh'
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0644
+  tags:
+    - cruise_config
+
+- name: Template configuration file to settings.gradle
+  template:
+    src: settings.gradle.j2
+    dest: '{{ cruise_dir }}/settings.gradle'
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0644
+  tags:
+    - cruise_config
+
+- name: Template cruise-control systemd service
+  template:
+    src: cruise-control.service.j2
+    dest: "{{ cruise_unit_path }}"
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0644
+  tags:
+    - cruise_service
+
+- name: Create symlink to cruise installation directory
+  file:
+    src: '{{ cruise_root_dir }}/cruise-control-{{ cruise_version }}'
+    dest: '{{ cruise_dir }}'
+    state: link
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+  tags:
+    - cruise_dirs
+
+- name: Create symlink to application log directory
+  file:
+    src: '{{ cruise_log_dir }}'
+    dest: '{{ cruise_dir }}/logs'
+    state: link
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+    mode: 0755
+    follow: no
+  when: not application_logs_dir.stat.exists
+  tags:
+    - cruise_dirs
+
+- name: Create symlink to cruisecontrol.properties file
+  file:
+    src: '{{ cruise_dir }}/config/cruisecontrol.properties'
+    dest: /etc/cruise-control/cruisecontrol.properties
+    state: link
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+  tags:
+    - cruise_config
+
+- name: Create symlink to log4j.properties file
+  file:
+    src: '{{ cruise_dir }}/config/log4j.properties'
+    dest: /etc/cruise-control/log4j.properties
+    state: link
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+  tags:
+    - cruise_config
+
+- name: Create symlink to gradle.properties file
+  file:
+    src: '{{ cruise_dir }}/gradle.properties'
+    dest: /etc/cruise-control/gradle.properties
+    state: link
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+  tags:
+    - cruise_config
+
+- name: Initializing the local repository
+  command: cd cruise-control-2.5.55 && git init && git add .
+
+- name: Extracting jars
+  command: ./gradlew jar
+
+- name: copy cruise's jars file to kafka's libs directory
+  synchronize:
+   src: {{ cruise_dir }}/cruise-control-metrics-reporter/build/libs
+   dest: /opt/kafka/libs
+
+- name: Copying Libs
+  command: ./gradlew jar copyDependantLibs
+
+- name: Download cruise_ui
+  get_url:
+    url: "{{ cruise_ui_download_base_url }}/v{{ cruise_ui_version }}.tar.gz"
+    dest: /{{ cruise_dir }}
+  when: not dir.stat.exists
+  tags:
+    - cruise_ui_download
+
+- name: Unpack cruise_ui
+  unarchive:
+    src: /{{ cruise_dir }}/cruise_control_ui-{{ cruise_ui_version }}.tar.gz
+    dest: '{{ cruise_dir }}'
+    copy: no
+    group: '{{ cruise_group }}'
+    owner: '{{ cruise_user }}'
+  when: not dir.stat.exists
+  tags:
+    - cruise_ui_unpack
+  notify:
+    - start kafka
+    - start zookeeper
+    - start cruise-control
+

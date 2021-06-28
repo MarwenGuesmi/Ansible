@@ -1,0 +1,14 @@
+---
+- name: Playbook Processing
+  hosts: kafka-nodes:zookeeper-nodes
+  tasks:
+    - import_role:
+        name: ansible-role-java-open-jdk11
+    - import_role:
+        name: sleighzy.kafka
+    - import_role:
+        name: sleighzy.zookeeper 
+    - import_role:
+        name: kafka_cruise_control               
+ 
+               

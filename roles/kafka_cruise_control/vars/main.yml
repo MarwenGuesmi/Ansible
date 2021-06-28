@@ -1,0 +1,3 @@
+---
+# vars file for kafka_cruise_control
+cruise_unit_path: /lib/systemd/system/cruise-control.service

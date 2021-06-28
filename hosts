@@ -1,0 +1,18 @@
+[all:vars]
+ansible_connection=ssh
+ansible_user=ansible
+ansible_become=true
+
+[zookeeper-nodes]
+mc1.exemple.com zookeeper_id=1
+mc2.exemple.com zookeeper_id=2
+mc3.exemple.com zookeeper_id=3
+
+[kafka-nodes]
+mc1.exemple.com kafka_broker_id=1
+mc2.exemple.com kafka_broker_id=2
+mc3.exemple.com kafka_broker_id=3
+
+[kafka-nodes:vars]
+kafka_zookeeper_connect='mc1.exemple.com:2181,mc2.exemple.com:2181,mc3.exemple.com:2181'
+kafka_bootstrap_servers='mc1.exemple.com:9092,mc2.exemple.com:9092,mc3.exemple.com:9092'

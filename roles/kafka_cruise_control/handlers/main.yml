@@ -1,0 +1,25 @@
+---
+# handlers file for kafka_cruise_control
+- name: start cruise-control 
+  service: name=cruise-control state=started
+  listen: "start cruise-control"
+
+- name: start Kafka
+  service: name=kafka state=started
+  listen: "start kafka"
+
+- name: start zookeeper
+  service: name=zookeeper state=started
+  listen: "start zookeeper"
+
+- name: stop kafka
+  service: name=kafka state=stopped
+  listen: "stop kafka"
+
+- name: stop zookeeper
+  service: name=zookeeper state=stopped
+  listen: "stop zookeeper"
+
+- name: stop cruise-control
+  service: name=cruise-control state=stopped
+  listen: "stop cruise-control"
