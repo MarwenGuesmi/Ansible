@@ -5,7 +5,7 @@ Vagrant.configure("2") do |config|
 
     (1..cluster_nodes).each do |i|
       config.vm.define "kafka-#{i}" do |node|
-        node.vm.box = "centos/7"
+        node.vm.box = "hashicorp/bionic64"
         node.vm.hostname  = "kafka#{i}"
         node.vm.network :private_network, ip: "192.168.56.10#{i}"
         #node.vm.provision :hosts, :sync_hosts => true
