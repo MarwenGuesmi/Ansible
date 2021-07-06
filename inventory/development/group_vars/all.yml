@@ -64,3 +64,8 @@ kafkaLogRetentionHours: 168
 kafkaLogSegmentBytes: 2073741824                                # need to ask expert kafka, should we use default 1GB here or 2GB or more
 kafkalogRetentionCheckIntervalMs: 300000
 kafkaGroupInitRebalanceDelayMs: 3
+
+
+
+
+ 
