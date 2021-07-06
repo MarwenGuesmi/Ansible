@@ -1,0 +1,29 @@
+---
+
+- name: copy requirements file
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/requirements.txt"
+    dest: "/tmp/requirements.txt"
+
+- name: install zooki.py dependencies
+  ansible.builtin.pip:
+    requirements: "/tmp/requirements.txt"
+    state: present
+  become: true
+
+- name: copying zooki.py to {{ zookeeperInstallDir }}
+  ansible.builtin.copy:
+    src: zooki.py
+    dest: "{{ zookeeperInstallDir }}"
+    owner: "{{ zookeeperUser }}"
+    group: "{{ zookeeperGroup }}"
+    mode: 0777
+
+- name: cron for zookeeper metric collector ( zooki.py )
+  ansible.builtin.cron:
+    name: "zookeeper metric collector"
+    minute: "*"
+    hour: "*"
+    weekday: "*"
+    user: "{{ zookeeperUser }}"
+    job: 'python3 {{ zookeeperInstallDir }}/zooki.py {{ zookeeperInstallDir }} {{ zookeeperLogDir }}/  {{ zookeeperEnvironment }} \;'
