@@ -7,6 +7,9 @@ updateJava: false # only when you need to update java version
 
 useSystemFirewall: false
 
+zookeeper_mirror: https://www-eu.apache.org/dist/zookeeper
+zookeeper_package: apache-zookeeper-{{ zookeeperVersion }}-bin.tar.gz
+
 zookeeperGroup: "zookeeper"
 zookeeperUser: "zookeeper"
 zookeeperGroupId: 6000
@@ -29,7 +32,7 @@ zookeeperVersion: 3.7.0
 zookeeperOldVersion: 3.6.3 # only used in removing old versions
 
 # use local tar only
-zookeeperTarLocation: "/home/dpal/Downloads/apache-zookeeper-{{ zookeeperVersion }}-bin.tar.gz"
+zookeeperTarLocation: /tmp/"{{ zookeeper_package }}"
 
 # splunk/Cloudwatch monitoring
 zookeeperEnvironment: "development"

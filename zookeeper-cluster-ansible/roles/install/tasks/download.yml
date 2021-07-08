@@ -3,11 +3,16 @@
 # TODO: download zookeeper tar file to ansible server only if possible 
 #       to reduce multiple downloads on all nodes.
 #       Not Required: if downloading from local company mirror.
+- name: Download Apache ZooKeeper
+  get_url:
+    url: "{{ zookeeper_mirror }}/zookeeper-{{ zookeeperVersion }}/{{ zookeeper_package }}"
+    dest: /tmp
 
-- name: Copying and Unarchive zookeeper tar | {{ zookeeperVersion }}
-  ansible.builtin.unarchive:
-    src: "{{ zookeeperTarLocation }}"
+- name: Unarchive zookeeper 
+  unarchive:
+    src: /tmp/{{ zookeeper_package }}
     dest: "{{ zookeeperInstallDir }}/zookeeper-{{ zookeeperVersion }}"
+    copy: no
     owner: "{{ zookeeperUser }}"
     group: "{{ zookeeperGroup }}"
     validate_certs: false
