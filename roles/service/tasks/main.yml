@@ -3,4 +3,4 @@
 - name: Creating Service File | Kafka
   ansible.builtin.template:
     src: service.j2
-    dest: /usr/lib/systemd/system/kafka.service
+    dest: /etc/systemd/system/kafka.service
