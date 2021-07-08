@@ -3,6 +3,9 @@
 javaVersion: 11
 updateJava: false                                               # only when you need to update java version
 
+kafka_download_base_url: http://www-eu.apache.org/dist/kafka
+
+
 useSystemFirewall: false
 
 kafkaGroup: kafka
@@ -33,7 +36,7 @@ kafkaClusterName: development-kafka
 
 kafkaVersion: 2.8.0
 kafkaScalaVersion: 2.13
-kafkaTarLocation: "/home/dpal/Downloads/kafka_{{ kafkaScalaVersion }}-{{ kafkaVersion }}.tgz"
+kafkaTarLocation: "/tmp/kafka_{{ kafkaScalaVersion }}-{{ kafkaVersion }}.tgz"
 
 # below will be used while decommission/downgrade only
 kafkaOldVersion: 2.7.0
